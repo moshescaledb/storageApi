@@ -10,12 +10,25 @@
 *******************************************************************************************************/
 void demoStorageCalls(){
 
+	int retValue;
+
 	StorageMapper *pMapper = new StorageMapper();			// init the mapper
 
 	PostgresConnect *pPstgresConnect = new PostgresConnect();	// init connection to PostgreSQL
 
+	// connect 
+	PGconn *conn = pPstgresConnect->init("localhost", "5432", "postgres", "postgres", "password");		// Initialize postgres, return dbms connection
+	if (!conn){
+		// connection failed - print error and exit
+		printf("\nFailed to connect to Postgres - %s", pPstgresConnect->getErrorMessage());
+		exit(-1);
+	}
 
-	pPstgresConnect->init("localhost", "5432", "postgres", "postgres", "password");
+
+	// Create some tables
+	if (pPstgresConnect->runCreateStatements(conn, true)){
+		// got an error
+	}
 
 	// 1. Insert
 
@@ -27,6 +40,8 @@ void demoStorageCalls(){
 	char jasonQuery[] = "{ \"where\": { \"column\": \"c1\", \"condition\": \"=\" , \"value\" : \"mine\", \"and\" : { \"column\" : \"c2\", \"condition\" : \"<\", \"value\" : \"20\" } } }";
 
 	pMapper->select( "aa\\myTable" , jasonQuery);
+
+	pPstgresConnect->disconnect(conn);
 
 	delete pMapper;
 	delete pPstgresConnect;
