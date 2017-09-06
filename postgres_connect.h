@@ -23,10 +23,27 @@ public:
 
 private:
 
-	void error(char *mess){
-		fprintf(stderr, "### %s\n", mess);
-		exit(1);
+
+/*******************************************************************************************************//**
+*! \brief Copy the error returned from the database to a buffer
+*******************************************************************************************************/
+	void saveError(PGconn *conn){
+
+		char *errorTxrt = PQerrorMessage(conn);
+		int errLength = (int)strlen(errorTxrt);
+
+		if (errLength < MAX_DBMS_ERR_MSG_LENGTH){
+			memcpy(dbmsError_, errorTxrt, errLength + 1);
+		}else{
+			// copy as much as possible
+			memcpy(dbmsError_, errorTxrt, MAX_DBMS_ERR_MSG_LENGTH - 1);
+			dbmsError_[MAX_DBMS_ERR_MSG_LENGTH - 1] = NULL;
+		}
+
 	}
+
+
+	char dbmsError_[MAX_DBMS_ERR_MSG_LENGTH];
 
 };
 

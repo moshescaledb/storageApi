@@ -1,9 +1,13 @@
-﻿Build started 9/5/2017 6:47:46 PM.
+﻿Build started 9/5/2017 7:04:52 PM.
      1>Project "C:\storageApi\windows\fog_storage\fog_storage.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Touching "x64\Debug\fog_storage.unsuccessfulbuild".
+         Creating "x64\Debug\fog_storage.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         All outputs are up-to-date.
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt ..\..\postgres_connect.cpp ..\..\storage_api.cpp
+         postgres_connect.cpp
+         Generating Code...
+         Skipping... (no relevant changes detected)
+         storage_api.cpp
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -14,12 +18,9 @@
          fog_storage.vcxproj -> C:\storageApi\windows\fog_storage\x64\Debug\fog_storage.exe
        Manifest:
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"x64\Debug\fog_storage.exe.embed.manifest" /manifest x64\Debug\fog_storage.exe.intermediate.manifest
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"x64\Debug\fog_storage.exe.embed.manifest.res" x64\Debug\fog_storage_manifest.rc 
+         All outputs are up-to-date.
        LinkEmbedManifest:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\storageApi\windows\fog_storage\x64\Debug\fog_storage.exe" /INCREMENTAL /NOLOGO libpq.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"x64\Debug\fog_storage.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\storageApi\windows\fog_storage\x64\Debug\fog_storage.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\storageApi\windows\fog_storage\x64\Debug\fog_storage.lib" /MACHINE:X64 x64\Debug\fog_storage.exe.embed.manifest.res
-         x64\Debug\postgres_connect.obj
-         x64\Debug\storage_api.obj
-         x64\Debug\storage_mapper.obj
+         All outputs are up-to-date.
          fog_storage.vcxproj -> C:\storageApi\windows\fog_storage\x64\Debug\fog_storage.exe
        FinalizeBuildStatus:
          Deleting file "x64\Debug\fog_storage.unsuccessfulbuild".
@@ -28,4 +29,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.59
+Time Elapsed 00:00:00.58

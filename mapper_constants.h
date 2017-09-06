@@ -5,6 +5,7 @@
 #define DEBUG_SELECT
 
 #define MAX_SQL_STMT_LENGTH 1000		// max size of a sql statement
+#define MAX_DBMS_ERR_MSG_LENGTH 1000	// max size of an error message of the database
 
 // Internal Mapper Errors (stating at 8000)
 

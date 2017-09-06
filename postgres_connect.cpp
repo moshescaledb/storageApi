@@ -32,7 +32,7 @@ int PostgresConnect::init(char *host, char *port, char *database, char *userName
 		//if connected
 		retValue = 0;
 	}else{  
-		error(PQerrorMessage(conn));
+		saveError(conn);
 		retValue = FAILED_DBMS_CONNECTION;    
 	}
 
@@ -43,19 +43,19 @@ int PostgresConnect::init(char *host, char *port, char *database, char *userName
   //create a table
   res = PQexec(conn, "CREATE TABLE hello (message VARCHAR(32))");
   if (PQresultStatus(res) != PGRES_COMMAND_OK)
-    error(PQresultErrorMessage(res));
+    saveError(conn);
   PQclear(res);
 
   //insert data
   res = PQexec(conn, "INSERT INTO hello VALUES ('Hello World!')");
   if (PQresultStatus(res) != PGRES_COMMAND_OK)
-    error(PQresultErrorMessage(res));
+    saveError(conn);
   PQclear(res);
 
   //query the db
   res = PQexec(conn, "SELECT * FROM hello");
   if (PQresultStatus(res) != PGRES_TUPLES_OK)
-    error(PQresultErrorMessage(res));
+    saveError(conn);
   nfields = PQnfields(res);
   ntuples = PQntuples(res);
 
