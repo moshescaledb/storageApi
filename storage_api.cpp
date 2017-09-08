@@ -49,6 +49,7 @@ void demoStorageCalls(){
 		exit(-1);
 	}
 
+
 	char jasonQuery[] = "{ \"where\": { \"column\": \"c1\", \"condition\": \"=\" , \"value\" : \"mine\", \"and\" : { \"column\" : \"c2\", \"condition\" : \"<\", \"value\" : \"20\" } } }";
 
 	pMapper->select( "aa\\myTable" , jasonQuery, sqlStmt);
