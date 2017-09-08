@@ -1,10 +1,10 @@
-﻿Build started 9/8/2017 3:00:20 PM.
+﻿Build started 9/8/2017 4:01:09 PM.
      1>Project "C:\storageApi\windows\fog_storage\fog_storage.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\fog_storage.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt ..\..\storage_api.cpp
-         storage_api.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt ..\..\postgres_connect.cpp
+         postgres_connect.cpp
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -26,4 +26,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.16
+Time Elapsed 00:00:01.31

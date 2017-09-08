@@ -132,13 +132,20 @@ int PostgresConnect::select(PGconn *conn, char *sqlStmt){
 		saveError(res, conn);
 		retValue = INSERT_FAILED;
 	}else{
+//
+//		SELECT column_name, data_type
+//FROM   information_schema.columns
+//WHERE  table_name = 'readings' and column_name = 'id';
+
 
 		nfields = PQnfields(res);
 		ntuples = PQntuples(res);
 
 		for(i = 0; i < ntuples; i++)
 			for(j = 0; j < nfields; j++)
-				printf("[%d,%d] %s\n", i, j, PQgetvalue(res, i, j));
+				printf("\n[%d,%d] %s", i, j, PQgetvalue(res, i, j));
+
+		
 
 	}
 

@@ -335,19 +335,29 @@ int StorageMapper::addCondition(char *sqlStmt, int *destOffset, Value::ConstMemb
 *******************************************************************************************************/
 int StorageMapper::addValue(char *sqlStmt, int *destOffset, Value::ConstMemberIterator *nestedItr){
 
-	char *value;
+	char *charValue;
+	int intValue;
 	int stringLength;
 	int offsetSql = *destOffset;
+	int retValue;
 
 	if ((*nestedItr)->value.IsString()){
-		value = (char *)(*nestedItr)->value.GetString();
+		charValue = (char *)(*nestedItr)->value.GetString();
 		stringLength = (*nestedItr)->value.GetStringLength();
-		if (!moveStringToSqlBuff(sqlStmt, offsetSql, value, stringLength)){
-			return JSON_SIZE_ERROR;
+		retValue = moveStringToDest(sqlStmt + offsetSql, charValue, stringLength, MAX_SQL_STMT_LENGTH - offsetSql, true, false, &offsetSql);
+		if (retValue){
+			return retValue;
 		}
-		offsetSql += stringLength;
 	}else{
-		return PARSER_FAILURE_ON_JSON_DOCUMENT;	// column name must be a string
+		if ((*nestedItr)->value.IsInt()){
+			intValue = (*nestedItr)->value.GetInt();
+			retValue = moveIntToDest(sqlStmt + offsetSql, intValue,  MAX_SQL_STMT_LENGTH - offsetSql, false, &offsetSql);
+			if (retValue){
+				return retValue;
+			}
+		}else{
+			return PARSER_FAILURE_ON_JSON_DOCUMENT;	// value needs to be a string or an int
+		}
 	}
 
 	RETURN_IF_NO_SQL_BUFF_SPACE(offsetSql, 1);

@@ -21,7 +21,7 @@ void demoStorageCalls(){
 	PGconn *conn = pPstgresConnect->init("localhost", "5432", "postgres", "postgres", "password");		// Initialize postgres, return dbms connection
 	if (!conn){
 		// connection failed - print error and exit
-		printf("\nFailed to connect to Postgres - %s", pPstgresConnect->getErrorMessage());
+		printf("\nFailed to connect to PostgreSQL - %s", pPstgresConnect->getErrorMessage());
 		exit(-1);
 	}
 
@@ -29,6 +29,8 @@ void demoStorageCalls(){
 	// Create some tables
 	if (pPstgresConnect->runCreateStatements(conn, true)){
 		// got an error
+		printf("\nFailed to create tables - %s", pPstgresConnect->getErrorMessage());
+		exit(-1);
 	}
 
 	// 1. Insert
@@ -49,11 +51,23 @@ void demoStorageCalls(){
 		exit(-1);
 	}
 
+	// test select
+	memset(sqlStmt, ' ', MAX_SQL_STMT_LENGTH);	// for debug
+
+	char jasonQuery2[] = "{ \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"<=\", \"value\" : \"ABCDE\" } } }";
+
+	retValue = pMapper->select( "aa\\readings" , jasonQuery2, sqlStmt);
+	if (retValue){
+		printf("\nFailed to parse JSON select with error - %i", retValue);
+		exit(-1);
+	}
 
 
-	char jasonQuery[] = "{ \"where\": { \"column\": \"c1\", \"condition\": \"=\" , \"value\" : \"mine\", \"and\" : { \"column\" : \"c2\", \"condition\" : \"<\", \"value\" : \"20\" } } }";
-
-	pMapper->select( "aa\\myTable" , jasonQuery, sqlStmt);
+	retValue = pPstgresConnect->select(conn, sqlStmt);	
+	if (retValue){
+		printf("\nFailed to select data - %s", pPstgresConnect->getErrorMessage());
+		exit(-1);
+	}
 
 	pPstgresConnect->disconnect(conn);
 
