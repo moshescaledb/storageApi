@@ -1,4 +1,4 @@
-﻿Build started 9/7/2017 6:54:28 PM.
+﻿Build started 9/7/2017 7:07:14 PM.
      1>Project "C:\storageApi\windows\fog_storage\fog_storage.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\fog_storage.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -28,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.71
+Time Elapsed 00:00:00.84

@@ -391,7 +391,7 @@ int StorageMapper::moveStringToDest(char *dest, char *src, int stringLength, int
 	}
 
 	if (addQuotation){
-		dest[0] = '\"';
+		dest[0] = '\'';
 		offset = 1;
 	}else{
 		offset = 0;
@@ -400,7 +400,7 @@ int StorageMapper::moveStringToDest(char *dest, char *src, int stringLength, int
 	memcpy(dest + offset, src, stringLength);
 
 	if (addQuotation){
-		dest[stringLength + offset] = '\"';
+		dest[stringLength + offset] = '\'';
 		++offset;
 	}
 

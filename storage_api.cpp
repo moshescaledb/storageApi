@@ -33,12 +33,21 @@ void demoStorageCalls(){
 
 	// 1. Insert
 
-	char jsonInsert[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : 1009, \"user_ts\" : \"10152017\", \"read_key\" : \"072291\" } ";;
+	char jsonInsert[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : 1009, \"user_ts\" : \"10152017\" } ";;
 
 	//char jsonInsert[] = " { \"name\" : \"Moshe\", \"city\" : \"Redwood City\" , \"pi\" : \"3.1416\"  } ";
 
-	pMapper->insert( "aa\\myTable" , jsonInsert, sqlStmt);
+	retValue = pMapper->insert( "aa\\readings" , jsonInsert, sqlStmt);	// get the sql from the json
+	if (retValue){
+		printf("\nFailed to parse JSON insert with error %i", retValue);
+		exit(-1);
+	}
 
+	retValue = pPstgresConnect->insert(conn, sqlStmt);	// insert the sql to postgres
+	if (retValue){
+		printf("\nFailed to insert data to the dbms - %s", pPstgresConnect->getErrorMessage());
+		exit(-1);
+	}
 
 	char jasonQuery[] = "{ \"where\": { \"column\": \"c1\", \"condition\": \"=\" , \"value\" : \"mine\", \"and\" : { \"column\" : \"c2\", \"condition\" : \"<\", \"value\" : \"20\" } } }";
 
