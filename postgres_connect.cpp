@@ -4,6 +4,7 @@
 
 PostgresConnect::PostgresConnect(void)
 {
+	dbmsErrorCode_[5] = NULL;		// for debug
 }
 
 
@@ -53,8 +54,8 @@ int PostgresConnect::runCreateStatements(PGconn *conn, bool ignoreDuplicateTable
 	PGresult *res;
 	
 	//create a table
-	res = PQexec(conn, "CREATE TABLE hello (message VARCHAR(32))");
-	
+	res = PQexec(conn, "CREATE TABLE readings (id bigint, asset_code character varying(50), read_key   uuid, reading jsonb, user_ts timestamp(6), ts timestamp(6))");
+
 	if (PQresultStatus(res) != PGRES_COMMAND_OK){
 		
 		saveError(res, conn);

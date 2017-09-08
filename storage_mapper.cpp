@@ -13,13 +13,13 @@ StorageMapper::~StorageMapper(){
 *! \brief Execute a query
 * \param[in] url - represents the table name in the database (table name is the last section of the url)
 * \param[in] jsonDoc - the data in JSON format
+* \param[out] sqlStmt - the sql statement to execute
 *******************************************************************************************************/
-int StorageMapper::select(char *url, char *jsonDoc){
+int StorageMapper::select(char *url, char *jsonDoc, char *sqlStmt){
 	
 	char *name;
 	int retValue;
 	int nameSize;
-	char sqlStmt[MAX_SQL_STMT_LENGTH];
 	Document document;  // Default template parameter
 	int offsetSql = 14;		// the offset in the sql stmt updated
 	int stringLength;
@@ -194,12 +194,12 @@ int StorageMapper::getWhereInfoType(char *name, int nameLength){
 *! \brief Inserts the JSON data to the database
 * \param[in] url - represents the table name in the database (table name is the last section of the url)
 * \param[in] jsonDoc - the data in JSON format
+* \param[out] sqlStmt - the sql statement to execute
 *******************************************************************************************************/
-int StorageMapper::insert(char *url, char *jsonDoc){
+int StorageMapper::insert(char *url, char *jsonDoc, char *sqlStmt){
 
 	int retValue;
 	int nameSize;
-	char sqlStmt[MAX_SQL_STMT_LENGTH];
 	Document document;  // Default template parameter
 	int offsetSql = 12;		// the offset in the sql stmt updated
 	int stringLength;
@@ -227,14 +227,14 @@ int StorageMapper::insert(char *url, char *jsonDoc){
 	for (Value::ConstMemberIterator itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr){
 		if (itr->name.IsString()){
 			stringLength = itr->name.GetStringLength();
-			retValue = moveStringToDest( sqlStmt + offsetSql, (char *)itr->name.GetString(), stringLength, MAX_SQL_STMT_LENGTH - offsetSql, true);
+			retValue = moveStringToDest( sqlStmt + offsetSql, (char *)itr->name.GetString(), stringLength, MAX_SQL_STMT_LENGTH - offsetSql, false, true, &offsetSql);
 			if (retValue){
 				return retValue;
 			}
 		}else{
 			return NON_SUPPORTED_JSON_FORMAT;
 		}
-		offsetSql += (stringLength + 1);	// the +1 for the comma
+		
 	}
 	
 	RETURN_IF_NO_SQL_BUFF_SPACE(offsetSql,9);
@@ -247,14 +247,18 @@ int StorageMapper::insert(char *url, char *jsonDoc){
 	for (Value::ConstMemberIterator itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr){
 		if (itr->value.IsString()){
 			stringLength = itr->value.GetStringLength();
-			retValue = moveStringToDest( sqlStmt + offsetSql, (char *)itr->value.GetString(), stringLength, MAX_SQL_STMT_LENGTH - offsetSql, true);
+			retValue = moveStringToDest( sqlStmt + offsetSql, (char *)itr->value.GetString(), stringLength, MAX_SQL_STMT_LENGTH - offsetSql, true, true, &offsetSql);
 			if (retValue){
 				return retValue;
 			}
 		}else{
-			return NON_SUPPORTED_JSON_FORMAT;
+			if (itr->value.IsInt()){
+				retValue = moveIntToDest( sqlStmt + offsetSql, itr->value.GetInt(), MAX_SQL_STMT_LENGTH - offsetSql, true, &offsetSql);
+			}else{
+				return NON_SUPPORTED_JSON_FORMAT;
+			}
 		}
-		offsetSql += (stringLength + 1);	// the +1 for the comma
+		
 	}
 
 	if (!copyToSqlStmt(sqlStmt, offsetSql - 1, ");\0", 3)){		// the -1 to overwrite the comma
@@ -370,18 +374,81 @@ bool StorageMapper::moveStringToSqlBuff(char *sqlStmt, int offsetSql, char *src,
 
 /*******************************************************************************************************//**
 *! \brief Copy a string to a destination buffer, consider the space available in the dest buffer.
+* \param[in] dest - ptr to destination string
+* \param[in] src - ptr to source string
+* \param[in] stringLength - length of string to copy without quotation and comma
+* \param[in] addQuotation - true to rap quotation
+* \param[in] addComma - true to add comma
+* \param[out] offsetSql - increase this value for the caller by the length including quotation and comma.
 * \return 0 or an error value
 *******************************************************************************************************/
-int StorageMapper::moveStringToDest(char *dest, char *src, int stringLength, int maxLength, bool addComma){
+int StorageMapper::moveStringToDest(char *dest, char *src, int stringLength, int maxLength, bool addQuotation, bool addComma, int *offsetSql){
 
-	if (stringLength > maxLength){
+	int offset;
+
+	if ((stringLength + (addQuotation ? 2 : 0) + (addComma ? 1 : 0)) > maxLength){	// determine the size including Quotation and comma
 		return JSON_SIZE_ERROR;
 	}
 
-	memcpy(dest, src, stringLength);
+	if (addQuotation){
+		dest[0] = '\"';
+		offset = 1;
+	}else{
+		offset = 0;
+	}
+
+	memcpy(dest + offset, src, stringLength);
+
+	if (addQuotation){
+		dest[stringLength + offset] = '\"';
+		++offset;
+	}
+
+	if (addComma){
+		*(dest + stringLength + offset) = ',';
+		++offset;
+	}
+
+	*offsetSql += (stringLength + offset);
+
+	return 0;
+}
+
+
+/*******************************************************************************************************//**
+*! \brief Copy a string to a destination buffer, consider the space available in the dest buffer.
+* \param[in] dest - ptr to destination string
+* \param[in] value - value to place on dest
+* \param[in] stringLength - length of string to copy without quotation and comma
+* \param[in] addQuotation - true to rap quotation
+* \param[in] addComma - true to add comma
+* \param[out] offsetSql - increase this value for the caller by the length including quotation and comma.
+* \return 0 or an error value
+*******************************************************************************************************/
+int StorageMapper::moveIntToDest(char *dest, int value, int maxLength, bool addComma, int *offsetSql){
+
+	int offset;
+	char numberBuffer[20];
+	int stringLength;
+
+	itoa(value, numberBuffer, 10);
+
+	stringLength = (int)strlen(numberBuffer);
+
+	if (stringLength > maxLength){	// test the size against the max size.
+		return JSON_SIZE_ERROR;
+	}
+
+	memcpy(dest, numberBuffer, stringLength);
+
 	if (addComma){
 		*(dest + stringLength) = ',';
+		offset = 1;
+	}else{
+		offset = 0;
 	}
+
+	*offsetSql += (stringLength + offset);
 
 	return 0;
 }
@@ -405,7 +472,7 @@ int StorageMapper::getTableNameFromUrl(char *url, int maxLength, char *dest, int
 		return MISSING_TABLE_NAME;	// URL was not provided
 	}
 
-	urlLength = strlen(url);
+	urlLength = (int)strlen(url);
 	length = urlLength;
 
 	if (!length){

@@ -24,14 +24,15 @@ public:
 	~StorageMapper();
 
 
-	int select(char *url, char *jsonDoc);
-	int insert(char *tableName, char *jsonDoc);
+	int select(char *url, char *jsonDoc, char *sqlStmt);
+	int insert(char *tableName, char *jsonDoc, char *sqlStmt);
 
 
 private:
 
 	int getTableNameFromUrl(char *url, int maxLength, char *dest, int *nameSize);
-	int moveStringToDest(char *dest, char *src, int stringLength, int maxLength, bool addComma);
+	int moveStringToDest(char *dest, char *src, int stringLength, int maxLength, bool addQuotation, bool addComma, int *offsetSql);
+	int moveIntToDest(char *dest, int value, int maxLength, bool addComma, int *offsetSql);
 	bool moveStringToSqlBuff(char *sqlStmt, int offsetSql, char *src, int stringLength);
 	int setSqlPrefix(char *sqlPrefix, int sqlPrefixSize, char *url, char *dest );
 	int getNestedObject( Value *nestedObject, char *sqlStmt, int *offsetSql  );

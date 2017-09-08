@@ -69,7 +69,7 @@ private:
 	bool isDuplicateTable(){ return memcmp(dbmsErrorCode_, "42P07", 5) == 0 ? true : false; }
 
 	char dbmsErrorTxt_[MAX_DBMS_ERR_MSG_LENGTH];
-	char dbmsErrorCode_[5];
+	char dbmsErrorCode_[6];
 
 };
 

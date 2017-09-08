@@ -11,6 +11,7 @@
 void demoStorageCalls(){
 
 	int retValue;
+	char sqlStmt[MAX_SQL_STMT_LENGTH];
 
 	StorageMapper *pMapper = new StorageMapper();			// init the mapper
 
@@ -32,14 +33,16 @@ void demoStorageCalls(){
 
 	// 1. Insert
 
-	char jsonInsert[] = " { \"name\" : \"moshe\", \"city\" : \"Redwood City\" , \"pi\" : \"3.1416\"  } ";
+	char jsonInsert[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : 1009, \"user_ts\" : \"10152017\", \"read_key\" : \"072291\" } ";;
 
-	pMapper->insert( "aa\\myTable" , jsonInsert);
+	//char jsonInsert[] = " { \"name\" : \"Moshe\", \"city\" : \"Redwood City\" , \"pi\" : \"3.1416\"  } ";
+
+	pMapper->insert( "aa\\myTable" , jsonInsert, sqlStmt);
 
 
 	char jasonQuery[] = "{ \"where\": { \"column\": \"c1\", \"condition\": \"=\" , \"value\" : \"mine\", \"and\" : { \"column\" : \"c2\", \"condition\" : \"<\", \"value\" : \"20\" } } }";
 
-	pMapper->select( "aa\\myTable" , jasonQuery);
+	pMapper->select( "aa\\myTable" , jasonQuery, sqlStmt);
 
 	pPstgresConnect->disconnect(conn);
 
