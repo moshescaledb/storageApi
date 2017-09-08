@@ -33,7 +33,7 @@ void demoStorageCalls(){
 
 	// 1. Insert
 
-	char jsonInsert[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : 1009, \"user_ts\" : \"10152017\" } ";;
+	char jsonInsert[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : \"c7c41c31-fb4d-4720-8abd-80b65e55f24b\", \"user_ts\" : \"1994-11-29\" } ";;
 
 	//char jsonInsert[] = " { \"name\" : \"Moshe\", \"city\" : \"Redwood City\" , \"pi\" : \"3.1416\"  } ";
 

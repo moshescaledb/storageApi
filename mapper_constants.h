@@ -20,6 +20,7 @@
 #define FAILED_DBMS_CONNECTION			9000
 #define CREATE_TABLE_FAILED				9001
 #define INSERT_FAILED					9002
+#define DROP_TABLE_FAILED				9003
 
 
 // internal numbers representing the sql part to be considered

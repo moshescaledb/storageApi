@@ -52,8 +52,17 @@ int PostgresConnect::runCreateStatements(PGconn *conn, bool ignoreDuplicateTable
 
 	int retValue;
 	PGresult *res;
+
+
+	res = PQexec(conn, "DROP TABLE IF EXISTS readings");
+	if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		saveError(res, conn);
+		return DROP_TABLE_FAILED;
+	}
+
 	
 	//create a table
+	
 	res = PQexec(conn, "CREATE TABLE readings (id bigint, asset_code character varying(50), read_key   uuid, reading jsonb, user_ts timestamp(6), ts timestamp(6))");
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK){
