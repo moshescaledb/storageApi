@@ -201,7 +201,7 @@ printf("JSON: %s\n", str);
 
 					break;
 				case 710:		// dataType float (replace 701 with FLOAT8OID)
-					value_obj.AddMember("string", sname , allocator);
+					value_obj.AddMember("string", "v1" , allocator);
 					break;
 				case 1043:		// dataType character varying (replace 1043 with VARCHAROID)
 					break;
