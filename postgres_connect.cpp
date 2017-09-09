@@ -123,6 +123,7 @@ int PostgresConnect::select(PGconn *conn, char *sqlStmt){
 
 	int nfields, ntuples, i, j;
 	PGresult *res;
+	int fieldType;
 
 	//query the db
 	res = PQexec(conn, sqlStmt);
@@ -132,21 +133,37 @@ int PostgresConnect::select(PGconn *conn, char *sqlStmt){
 		saveError(res, conn);
 		retValue = INSERT_FAILED;
 	}else{
-//
-//		SELECT column_name, data_type
-//FROM   information_schema.columns
-//WHERE  table_name = 'readings' and column_name = 'id';
+
+		//id bigint, asset_code character varying(50), read_key   uuid, reading jsonb, user_ts timestamp(6), ts timestamp(6))
 
 
 		nfields = PQnfields(res);
 		ntuples = PQntuples(res);
 
-		for(i = 0; i < ntuples; i++)
-			for(j = 0; j < nfields; j++)
-				printf("\n[%d,%d] %s", i, j, PQgetvalue(res, i, j));
+		for(i = 0; i < ntuples; i++){
+			for(j = 0; j < nfields; j++){
+				fieldType = PQftype(res, j);
+				printf("\n[%d,%d] %s - %u", i, j, PQgetvalue(res, i, j), fieldType );
 
-		
+				switch (fieldType){	// Need to include pg_type.h - The list is available here - https://doxygen.postgresql.org/include_2catalog_2pg__type_8h_source.html 
 
+					case 20:		// dataType bigint (replace 20 with INT8OID)
+						break;
+					case 1043:		// dataType character varying (replace 1043 with VARCHAROID)
+						break;
+					case 2950:		// dataType uuid (replace 2950 with UUIDOID)
+						break;
+					case 3802:		// dataType jsonb (replace 3802 with JSONBOID)
+						break;
+					case 1114:		// dataType timestamp (replace 3802 with TIMESTAMPOID)
+						break;
+					default:
+						retValue = NON_SUPPORTED_DATA_TYPE;
+						break;
+				}
+			}
+		}
+	
 	}
 
 	PQclear(res);
