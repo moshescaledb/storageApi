@@ -153,6 +153,8 @@ void PostgresConnect::createJson( PGresult *res ){
 	int fieldType;
 	int nfields, ntuples, i, j;
 	int retValue;
+	char *fieldName;
+
 
 Document doc;
 doc.SetObject();
@@ -183,14 +185,23 @@ printf("JSON: %s\n", str);
 	nfields = PQnfields(res);
 	ntuples = PQntuples(res);
 
+
+	 string sname = "test03";
+
+
 	for(i = 0; i < ntuples; i++){
 		for(j = 0; j < nfields; j++){
 			fieldType = PQftype(res, j);
+			fieldName = PQfname(res, j);
 			printf("\n[%d,%d] %s - %u", i, j, PQgetvalue(res, i, j), fieldType );
 
 			switch (fieldType){	// Need to include pg_type.h - The list is available here - https://doxygen.postgresql.org/include_2catalog_2pg__type_8h_source.html 
 
 				case 20:		// dataType bigint (replace 20 with INT8OID)
+
+					break;
+				case 710:		// dataType float (replace 701 with FLOAT8OID)
+					value_obj.AddMember("string", sname , allocator);
 					break;
 				case 1043:		// dataType character varying (replace 1043 with VARCHAROID)
 					break;
