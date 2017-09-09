@@ -119,11 +119,10 @@ int PostgresConnect::insert(PGconn *conn, char *sqlStmt){
 *******************************************************************************************************/
 int PostgresConnect::select(PGconn *conn, char *sqlStmt){
 
-	int retValue;
 
-	int nfields, ntuples, i, j;
+	int retValue;
 	PGresult *res;
-	int fieldType;
+
 
 	//query the db
 	res = PQexec(conn, sqlStmt);
@@ -136,33 +135,8 @@ int PostgresConnect::select(PGconn *conn, char *sqlStmt){
 
 		//id bigint, asset_code character varying(50), read_key   uuid, reading jsonb, user_ts timestamp(6), ts timestamp(6))
 
-
-		nfields = PQnfields(res);
-		ntuples = PQntuples(res);
-
-		for(i = 0; i < ntuples; i++){
-			for(j = 0; j < nfields; j++){
-				fieldType = PQftype(res, j);
-				printf("\n[%d,%d] %s - %u", i, j, PQgetvalue(res, i, j), fieldType );
-
-				switch (fieldType){	// Need to include pg_type.h - The list is available here - https://doxygen.postgresql.org/include_2catalog_2pg__type_8h_source.html 
-
-					case 20:		// dataType bigint (replace 20 with INT8OID)
-						break;
-					case 1043:		// dataType character varying (replace 1043 with VARCHAROID)
-						break;
-					case 2950:		// dataType uuid (replace 2950 with UUIDOID)
-						break;
-					case 3802:		// dataType jsonb (replace 3802 with JSONBOID)
-						break;
-					case 1114:		// dataType timestamp (replace 3802 with TIMESTAMPOID)
-						break;
-					default:
-						retValue = NON_SUPPORTED_DATA_TYPE;
-						break;
-				}
-			}
-		}
+		createJson( res );
+		retValue = 0;
 	
 	}
 
@@ -171,7 +145,69 @@ int PostgresConnect::select(PGconn *conn, char *sqlStmt){
 
   return retValue;
 }
+/*******************************************************************************************************//**
+*! \brief Create JSON doc from a result set
+*******************************************************************************************************/
+void PostgresConnect::createJson( PGresult *res ){
 
+	int fieldType;
+	int nfields, ntuples, i, j;
+	int retValue;
+
+Document doc;
+doc.SetObject();
+
+Document::AllocatorType& allocator = doc.GetAllocator();	//allocator for reallocating memory
+
+Value value_obj(kObjectType);
+
+value_obj.AddMember("string", "v1", allocator);
+value_obj.AddMember("int", 5, allocator);
+value_obj.AddMember("double", 12.04, allocator);
+doc.AddMember("obj", value_obj, allocator);
+doc.AddMember("int", 7, allocator);
+// Convert JSON document to string
+GenericStringBuffer< UTF8<> > buffer;
+Writer< GenericStringBuffer< UTF8<> > > writer(buffer);
+doc.Accept(writer);
+
+
+const char* str = buffer.GetString();
+
+printf("JSON: %s\n", str);
+
+	Document document;
+	document.SetObject();	// create a JSON document
+	
+
+	nfields = PQnfields(res);
+	ntuples = PQntuples(res);
+
+	for(i = 0; i < ntuples; i++){
+		for(j = 0; j < nfields; j++){
+			fieldType = PQftype(res, j);
+			printf("\n[%d,%d] %s - %u", i, j, PQgetvalue(res, i, j), fieldType );
+
+			switch (fieldType){	// Need to include pg_type.h - The list is available here - https://doxygen.postgresql.org/include_2catalog_2pg__type_8h_source.html 
+
+				case 20:		// dataType bigint (replace 20 with INT8OID)
+					break;
+				case 1043:		// dataType character varying (replace 1043 with VARCHAROID)
+					break;
+				case 2950:		// dataType uuid (replace 2950 with UUIDOID)
+					break;
+				case 3802:		// dataType jsonb (replace 3802 with JSONBOID)
+					break;
+				case 1114:		// dataType timestamp (replace 3802 with TIMESTAMPOID)
+					break;
+				default:
+					retValue = NON_SUPPORTED_DATA_TYPE;
+					break;
+			}
+		}
+	}
+
+}
 /*******************************************************************************************************//**
 *! \brief Disconnect from postgres
 *******************************************************************************************************/

@@ -8,9 +8,17 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <time.h>
+#include <string>
 
 #include "mapper_constants.h"
 
+#include "include\rapidjson\document.h"
+#include "include\rapidjson\writer.h"
+#include "include\rapidjson\stringbuffer.h"
+#include "include\rapidjson\prettywriter.h" // for stringify JSON
+
+
+using namespace rapidjson;
 using namespace std;
 
 class PostgresConnect
@@ -28,7 +36,7 @@ public:
 	char *getErrorMessage() { return dbmsErrorTxt_; }
 
 private:
-
+	void createJson( PGresult *res );
 
 /*******************************************************************************************************//**
 *! \brief Save the error Code and Error Text returned from the database to a buffer
