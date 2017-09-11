@@ -3,6 +3,7 @@
 
 #define DEBUG_INSERT
 #define DEBUG_SELECT
+#define DEBUG_QUERY
 
 #define MAX_SQL_STMT_LENGTH 1000		// max size of a sql statement
 #define MAX_DBMS_ERR_MSG_LENGTH 1000	// max size of an error message of the database

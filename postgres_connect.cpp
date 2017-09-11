@@ -161,11 +161,17 @@ void PostgresConnect::createJson( PGresult *res ){
 
 	Document::AllocatorType& allocator = document.GetAllocator();	//allocator for reallocating memory
 
-	nfields = PQnfields(res);
 	ntuples = PQntuples(res);
+	nfields = PQnfields(res);
 
+	document.AddMember("count", ntuples, allocator);
+
+	Value value_obj(kObjectType);
 
 	for(i = 0; i < ntuples; i++){
+
+		Value valueObj(kObjectType);		// this is an object organized for each tuple.
+
 		for(j = 0; j < nfields; j++){
 			fieldType = PQftype(res, j);
 			fieldName = PQfname(res, j);
@@ -180,46 +186,52 @@ void PostgresConnect::createJson( PGresult *res ){
 						string strName(fieldName);
 						int intValue = atoi(fieldValue);
 						Value attrName(strName.c_str(), allocator);
-						document.AddMember(attrName, intValue, allocator);
+//						document.AddMember(attrName, intValue, allocator);
+						valueObj.AddMember(attrName, intValue, allocator);
 					}
 					break;
 
 				case 1043:		// dataType character varying (replace 1043 with VARCHAROID)
 				case 2950:		// dataType uuid (replace 2950 with UUIDOID)
+				case 3802:		// dataType jsonb (replace 3802 with JSONBOID)
+				case 1114:		// dataType timestamp (replace 3802 with TIMESTAMPOID)
 					{
 						string strName(fieldName);
 						string strValue(fieldValue);
 						Value attrName(strName.c_str(), allocator);
 						Value attrValue(strValue.c_str(), allocator);
-						document.AddMember(attrName, attrValue, allocator);
+//						document.AddMember(attrName, attrValue, allocator);
+						valueObj.AddMember(attrName, attrValue, allocator);
 					}
 
 					break;
 				case 710:		// dataType float (replace 701 with FLOAT8OID)
-//					value_obj.AddMember("string", "v1" , allocator);
-					break;
-				case 3802:		// dataType jsonb (replace 3802 with JSONBOID)
-					break;
-				case 1114:		// dataType timestamp (replace 3802 with TIMESTAMPOID)
+					{
+						string strName(fieldName);
+						double floatValue = atof(fieldValue);
+						Value attrName(strName.c_str(), allocator);
+//						document.AddMember(attrName, floatValue, allocator);
+						valueObj.AddMember(attrName, floatValue, allocator);
+					}
 					break;
 				default:
 					retValue = NON_SUPPORTED_DATA_TYPE;
 					break;
 			}
 		}
+		document.AddMember("row", valueObj, allocator);
 	}
 
-// Convert JSON document to string
-GenericStringBuffer< UTF8<> > buffer;
-Writer< GenericStringBuffer< UTF8<> > > writer(buffer);
-document.Accept(writer);
+	// Convert JSON document to string
+	GenericStringBuffer< UTF8<> > buffer;
+	Writer< GenericStringBuffer< UTF8<> > > writer(buffer);
+	document.Accept(writer);
 
+	const char* str = buffer.GetString();
 
-const char* str = buffer.GetString();
-
-printf("\nJSON: %s\n", str);
-printf("\nJSON: %s\n", str);
-
+#ifdef DEBUG_QUERY
+	printf("\nJSON: %s\n", str);
+#endif
 }
 /*******************************************************************************************************//**
 *! \brief Disconnect from postgres

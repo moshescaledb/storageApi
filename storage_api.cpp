@@ -33,13 +33,11 @@ void demoStorageCalls(){
 		exit(-1);
 	}
 
-	// 1. Insert
+	// 1. Insert - 1
 
-	char jsonInsert[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : \"c7c41c31-fb4d-4720-8abd-80b65e55f24b\", \"user_ts\" : \"1994-11-29\" } ";;
+	char jsonInsert1[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : \"c7c41c31-fb4d-4720-8abd-80b65e55f24b\", \"user_ts\" : \"1994-11-29\" } ";;
 
-	//char jsonInsert[] = " { \"name\" : \"Moshe\", \"city\" : \"Redwood City\" , \"pi\" : \"3.1416\"  } ";
-
-	retValue = pMapper->insert( "aa\\readings" , jsonInsert, sqlStmt);	// get the sql from the json
+	retValue = pMapper->insert( "aa\\readings" , jsonInsert1, sqlStmt);	// get the sql from the json
 	if (retValue){
 		printf("\nFailed to parse JSON insert with error %i", retValue);
 		exit(-1);
@@ -51,23 +49,41 @@ void demoStorageCalls(){
 		exit(-1);
 	}
 
-	// test select
+	// 2. Insert - 2
+
+	char jsonInsert2[] = " { \"id\" : 98765, \"asset_code\" : \"QRSTUV\" , \"read_key\" : \"c7c41c31-fb4d-4720-8abd-80b65e55f24b\", \"user_ts\" : \"1994-11-24\" } ";;
+
+	retValue = pMapper->insert( "aa\\readings" , jsonInsert2, sqlStmt);	// get the sql from the json
+	if (retValue){
+		printf("\nFailed to parse JSON insert with error %i", retValue);
+		exit(-1);
+	}
+
+	retValue = pPstgresConnect->insert(conn, sqlStmt);	// insert the sql to postgres
+	if (retValue){
+		printf("\nFailed to insert data to the dbms - %s", pPstgresConnect->getErrorMessage());
+		exit(-1);
+	}
+
+	// 3. test select
 	memset(sqlStmt, ' ', MAX_SQL_STMT_LENGTH);	// for debug
 
-	char jasonQuery2[] = "{ \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"<=\", \"value\" : \"ABCDE\" } } }";
+	char jasonQuery1[] = "{ \"where\": { \"column\": \"id\", \"condition\": \">=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \">=\", \"value\" : \"ABCDE\" } } }";
 
-	retValue = pMapper->select( "aa\\readings" , jasonQuery2, sqlStmt);
+
+
+	retValue = pMapper->select( "aa\\readings" , jasonQuery1, sqlStmt);		
 	if (retValue){
 		printf("\nFailed to parse JSON select with error - %i", retValue);
 		exit(-1);
 	}
 
-
-	retValue = pPstgresConnect->select(conn, sqlStmt);	
+	retValue = pPstgresConnect->select(conn, sqlStmt);	// returns 1 row
 	if (retValue){
 		printf("\nFailed to select data - %s", pPstgresConnect->getErrorMessage());
 		exit(-1);
 	}
+
 
 	pPstgresConnect->disconnect(conn);
 
