@@ -25,7 +25,6 @@ void demoStorageCalls(){
 		exit(-1);
 	}
 
-
 	// Create some tables
 	if (pPstgresConnect->runCreateStatements(conn, true)){
 		// got an error
@@ -65,12 +64,29 @@ void demoStorageCalls(){
 		exit(-1);
 	}
 
-	// 3. test select
+	// 3. Test update
 	memset(sqlStmt, ' ', MAX_SQL_STMT_LENGTH);	// for debug
 
-	char jasonQuery1[] = "{ \"where\": { \"column\": \"id\", \"condition\": \">=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \">=\", \"value\" : \"ABCDE\" } } }";
+	char jsonUpdate[] = "{ \"set\" : {\"column\": \"id\", \"condition\": \"=\" , \"value\" : 22222, \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"EDCBA\" } , \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"ABCDE\" } } }";
 
-	retValue = pMapper->select( "aa\\readings" , jasonQuery1, sqlStmt);		
+	retValue = pMapper->update( "aa\\readings" , jsonUpdate, sqlStmt);		
+	if (retValue){
+		printf("\nFailed to parse JSON select with error - %i", retValue);
+		exit(-1);
+	}
+
+	retValue = pPstgresConnect->update(conn, sqlStmt);	// returns 1 row
+	if (retValue){
+		printf("\nFailed to update data - %s", pPstgresConnect->getErrorMessage());
+		exit(-1);
+	}
+
+	// 4. test select
+	memset(sqlStmt, ' ', MAX_SQL_STMT_LENGTH);	// for debug
+
+	char jsonQuery1[] = "{ \"where\": { \"column\": \"id\", \"condition\": \">=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \">=\", \"value\" : \"ABCDE\" } } }";
+
+	retValue = pMapper->select( "aa\\readings" , jsonQuery1, sqlStmt);		
 	if (retValue){
 		printf("\nFailed to parse JSON select with error - %i", retValue);
 		exit(-1);
@@ -83,16 +99,21 @@ void demoStorageCalls(){
 	}
 
 
-	// 4. test delete
+	// 5. test delete
 
-	char jasondelete[] = "{ \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"ABCDE\" } } }";
+	char jsondelete[] = "{ \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"ABCDE\" } } }";
 
-	retValue = pMapper->deleteData( "aa\\readings" , jasonQuery1, sqlStmt);		
+	retValue = pMapper->deleteData( "aa\\readings" , jsonQuery1, sqlStmt);		
 	if (retValue){
 		printf("\nFailed to parse JSON select with error - %i", retValue);
 		exit(-1);
 	}
 
+	retValue = pPstgresConnect->deleteData(conn, sqlStmt);	// delete from the dbms
+	if (retValue){
+		printf("\nFailed to delete data - %s", pPstgresConnect->getErrorMessage());
+		exit(-1);
+	}
 
 
 	pPstgresConnect->disconnect(conn);

@@ -27,15 +27,16 @@ public:
 	int select(char *url, char *jsonDoc, char *sqlStmt);
 	int insert(char *tableName, char *jsonDoc, char *sqlStmt);
 	int deleteData(char *url, char *jsonDoc, char *sqlStmt);
+	int update(char *url, char *jsonDoc, char *sqlStmt);
 
 private:
-	int mapWhereConditionToSql(Document *document, char *sqlStmt, int *offsetSql);
+	int mapPairsToSql(Document *document, char *sqlStmt, int *offsetSql);
 	int getTableNameFromUrl(char *url, int maxLength, char *dest, int *nameSize);
 	int moveStringToDest(char *dest, char *src, int stringLength, int maxLength, bool addQuotation, bool addComma, int *offsetSql);
 	int moveIntToDest(char *dest, int value, int maxLength, bool addComma, int *offsetSql);
 	bool moveStringToSqlBuff(char *sqlStmt, int offsetSql, char *src, int stringLength);
 	int setSqlPrefix(char *sqlPrefix, int sqlPrefixSize, char *url, char *dest );
-	int getNestedObject( Value *nestedObject, char *sqlStmt, int *offsetSql  );
+	int getNestedObject( Value *nestedObject, char *sqlStmt, int *offsetSql, bool addComma  );
 	int getWhereInfoType(char *name, int nameLength);
 	int addColumnName(char *sqlStmt, int *destOffset, Value::ConstMemberIterator *nestedItr);
 	int addCondition(char *sqlStmt, int *destOffset, Value::ConstMemberIterator *nestedItr);

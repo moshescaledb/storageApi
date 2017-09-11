@@ -31,6 +31,8 @@ public:
 	int runCreateStatements(PGconn *conn, bool ignoreDuplicateTable);
 	int insert(PGconn *conn, char *sqlStmt);
 	int select(PGconn *conn, char *sqlStmt);
+	int deleteData(PGconn *conn, char *sqlStmt);
+	int update(PGconn *conn, char *sqlStmt);
 
 	void disconnect(PGconn *conn);
 	char *getErrorMessage() { return dbmsErrorTxt_; }

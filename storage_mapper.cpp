@@ -17,12 +17,10 @@ StorageMapper::~StorageMapper(){
 *******************************************************************************************************/
 int StorageMapper::select(char *url, char *jsonDoc, char *sqlStmt){
 	
-	char *name;
 	int retValue;
 	int nameSize;
 	Document document;  // Default template parameter
 	int offsetSql = 14;		// the offset in the sql stmt updated
-	int stringLength;
 	Value nestedObject;
 
 
@@ -45,7 +43,7 @@ int StorageMapper::select(char *url, char *jsonDoc, char *sqlStmt){
         return PARSER_FAILURE_ON_JSON_DOCUMENT;
 	}
 
-	retValue = mapWhereConditionToSql(&document, sqlStmt, &offsetSql);
+	retValue = mapPairsToSql(&document, sqlStmt, &offsetSql);
 	if (retValue){
 		return retValue;
 	}
@@ -97,7 +95,7 @@ int StorageMapper::deleteData(char *url, char *jsonDoc, char *sqlStmt){
 	}
 
 
-	retValue = mapWhereConditionToSql(&document, sqlStmt, &offsetSql);
+	retValue = mapPairsToSql(&document, sqlStmt, &offsetSql);
 	if (retValue){
 		return retValue;
 	}
@@ -114,18 +112,73 @@ int StorageMapper::deleteData(char *url, char *jsonDoc, char *sqlStmt){
 	return 0;
 }
 
+/*******************************************************************************************************//**
+*! \brief Execute an update
+* \param[in] url - represents the table name in the database (table name is the last section of the url)
+* \param[in] jsonDoc - the data in JSON format
+* \param[out] sqlStmt - the sql statement to execute
+*******************************************************************************************************/
+int StorageMapper::update(char *url, char *jsonDoc, char *sqlStmt){
+	
+
+	int retValue;
+	int nameSize;
+	Document document;  // Default template parameter
+	int offsetSql = 7;		// the offset in the sql stmt updated
+
+	Value nestedObject;
+
+
+	memcpy(sqlStmt, "update ", offsetSql);
+
+	// add table name
+	retValue = getTableNameFromUrl(url, MAX_SQL_STMT_LENGTH - offsetSql, sqlStmt + offsetSql, &nameSize);
+	if (retValue){
+		return retValue;
+	}
+
+	offsetSql += nameSize;
+
+	RETURN_IF_NO_SQL_BUFF_SPACE(offsetSql, 1);
+
+	sqlStmt[offsetSql] = ' ';
+	offsetSql += 1;
+
+	// parse the JSON
+    if (document.Parse(jsonDoc).HasParseError()){
+        return PARSER_FAILURE_ON_JSON_DOCUMENT;
+	}
+
+	retValue = mapPairsToSql(&document, sqlStmt, &offsetSql);// Add the WHERE part to the SQL
+	if (retValue){
+		return retValue;
+	}
+
+	if (!copyToSqlStmt(sqlStmt, offsetSql, ";\0", 2)){		
+		return JSON_SIZE_ERROR;
+	}
+
+#ifdef DEBUG_INSERT
+	printf("\n%s", sqlStmt);
+#endif
+
+	return 0;
+}
+
 
 /*******************************************************************************************************//**
-*! \brief Map a JSON where condition to SQL
+*! \brief Map a JSON attribute Value pair to SQL
 * \param[in] document - a pointer to the JSON document.
 * \param[out] sqlStmt - a pointer to the sql statement
 * \param[in/out] offsetSql - a pointer to the current offset in the sql statement
 *******************************************************************************************************/
-int StorageMapper::mapWhereConditionToSql(Document *document, char *sqlStmt, int *offsetSql){
+int StorageMapper::mapPairsToSql(Document *document, char *sqlStmt, int *offsetSql){
 
 	char *name;
 	int stringLength;
 	int retValue = NON_SUPPORTED_JSON_FORMAT;
+	bool addComma;
+	bool knownObject;
 
 	for (Value::ConstMemberIterator itr = (*document).MemberBegin(); itr != (*document).MemberEnd(); ++itr){
 		if (itr->name.IsString()){
@@ -144,18 +197,38 @@ int StorageMapper::mapWhereConditionToSql(Document *document, char *sqlStmt, int
 		*(sqlStmt + *offsetSql) = ' ';
 		++*offsetSql;
 
+		if (!(*document)[ name ].IsObject()){
+			return PARSER_FAILURE_ON_JSON_DOCUMENT;		// document[ name ] needs to show an Object representing where condition
+		}
 	
 		if (stringLength == 5 && memcmp(name, "where", stringLength) == 0){
-			if (!(*document)[ name ].IsObject()){
-				return PARSER_FAILURE_ON_JSON_DOCUMENT;		// document[ name ] needs to show an Object representing where condition
-			}
+			addComma = false;
+			knownObject = true;
+		}else{
 
-			retValue = getNestedObject( &(*document)[ name ], sqlStmt, offsetSql);
-			
-			if (retValue){
-				return retValue;
+			if (stringLength == 3 && memcmp(name, "set", stringLength) == 0){
+				addComma = true;
+				knownObject = true;
+			}else{
+				knownObject = false;
 			}
 		}
+
+		if (!knownObject){
+			// unknown object to parse
+			return PARSER_FAILURE_ON_JSON_DOCUMENT;
+		}
+
+		retValue = getNestedObject( &(*document)[ name ], sqlStmt, offsetSql, addComma);
+
+		if (addComma){
+			sqlStmt[*offsetSql - 1] = ' ';		// remove the last comma (after the set fields).
+		}
+			
+		if (retValue){
+			return retValue;
+		}
+		
 
 	}
 
@@ -168,7 +241,7 @@ int StorageMapper::mapWhereConditionToSql(Document *document, char *sqlStmt, int
 * \param[in] sqlStmt - the destination buffer
 * \param[in/out] destOffset - the offset for the sql text derived from the object - this value is shared with the caller
 *******************************************************************************************************/
-int StorageMapper::getNestedObject( Value *nestedObject, char *sqlStmt, int *offsetSql){
+int StorageMapper::getNestedObject( Value *nestedObject, char *sqlStmt, int *offsetSql, bool addComma){
 
 	int infoType;
 	int retValue;
@@ -193,6 +266,11 @@ int StorageMapper::getNestedObject( Value *nestedObject, char *sqlStmt, int *off
 					if (retValue){
 						return retValue;
 					}
+					if (addComma){
+						RETURN_IF_NO_SQL_BUFF_SPACE(*offsetSql, 1);
+						sqlStmt[*offsetSql]= ',';
+						++*offsetSql;
+					}
 					break;
 				case WHERE_CONDITION:
 					retValue = addCondition(sqlStmt, offsetSql, &nestedItr);
@@ -209,7 +287,7 @@ int StorageMapper::getNestedObject( Value *nestedObject, char *sqlStmt, int *off
 					if (nestedItr->value.IsObject()){
 						// must be an object with the AND condition
 						
-						retValue = getNestedObject(( Value *)&(nestedItr->value), sqlStmt, offsetSql);
+						retValue = getNestedObject(( Value *)&(nestedItr->value), sqlStmt, offsetSql, false);
 						if (retValue){
 							return retValue;
 						}
@@ -225,6 +303,7 @@ int StorageMapper::getNestedObject( Value *nestedObject, char *sqlStmt, int *off
 		}else{
 			return NON_SUPPORTED_JSON_FORMAT;
 		}
+
 	}
 
 

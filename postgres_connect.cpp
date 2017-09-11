@@ -112,6 +112,33 @@ int PostgresConnect::insert(PGconn *conn, char *sqlStmt){
 }
 
 /*******************************************************************************************************//**
+*! \brief Update Data
+* \param[in] conn - DBMS Connection
+* \param[in] sqlStmt - the sql string
+* \return 0 for success or an error code
+*******************************************************************************************************/
+int PostgresConnect::update(PGconn *conn, char *sqlStmt){
+
+	int retValue;
+	PGresult *res;
+
+	//insert data
+	res = PQexec(conn, sqlStmt);
+
+	if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		saveError(res, conn);
+		retValue = INSERT_FAILED;
+	}else{
+		retValue = 0;
+	}
+    
+	PQclear(res);
+
+	return retValue;
+}
+
+
+/*******************************************************************************************************//**
 *! \brief Select Data
 * \param[in] conn - DBMS Connection
 * \param[in] sqlStmt - the sql string
@@ -145,6 +172,33 @@ int PostgresConnect::select(PGconn *conn, char *sqlStmt){
 
   return retValue;
 }
+
+/*******************************************************************************************************//**
+*! \brief Delete Data
+* \param[in] conn - DBMS Connection
+* \param[in] sqlStmt - the sql string
+* \return 0 for success or an error code
+*******************************************************************************************************/
+int PostgresConnect::deleteData(PGconn *conn, char *sqlStmt){
+
+	int retValue;
+	PGresult *res;
+
+	//insert data
+	res = PQexec(conn, sqlStmt);
+
+	if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		saveError(res, conn);
+		retValue = INSERT_FAILED;
+	}else{
+		retValue = 0;
+	}
+    
+	PQclear(res);
+
+	return retValue;
+}
+
 /*******************************************************************************************************//**
 *! \brief Create JSON doc from a result set
 *******************************************************************************************************/
@@ -176,8 +230,6 @@ void PostgresConnect::createJson( PGresult *res ){
 			fieldType = PQftype(res, j);
 			fieldName = PQfname(res, j);
 			fieldValue = PQgetvalue(res, i, j);
-
-			printf("\n[%d,%d] %s - %u", i, j, fieldValue, fieldType );
 
 			switch (fieldType){	// Need to include pg_type.h - The list is available here - https://doxygen.postgresql.org/include_2catalog_2pg__type_8h_source.html 
 
