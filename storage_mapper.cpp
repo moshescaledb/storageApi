@@ -45,36 +45,9 @@ int StorageMapper::select(char *url, char *jsonDoc, char *sqlStmt){
         return PARSER_FAILURE_ON_JSON_DOCUMENT;
 	}
 
-
-	for (Value::ConstMemberIterator itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr){
-		if (itr->name.IsString()){
-			name = (char *)itr->name.GetString();		// needs to be one of the following: 1) where 2) ...
-		}else{
-			return PARSER_FAILURE_ON_JSON_DOCUMENT;		// missing expected sql text
-		}
-
-		stringLength = itr->name.GetStringLength();
-
-		RETURN_IF_NO_SQL_BUFF_SPACE(offsetSql,(stringLength + 1));
-
-		memcpy(sqlStmt + offsetSql, name , stringLength);
-		offsetSql += stringLength;
-
-		*(sqlStmt + offsetSql) = ' ';
-		++offsetSql;
-
-	
-		if (stringLength == 5 && memcmp(name, "where", stringLength) == 0){
-			if (!document[ name ].IsObject()){
-				return PARSER_FAILURE_ON_JSON_DOCUMENT;		// document[ name ] needs to show an Object representing where condition
-			}
-
-			retValue = getNestedObject( &document[ name ], sqlStmt, &offsetSql);
-			if (retValue){
-				return retValue;
-			}
-		}
-
+	retValue = mapWhereConditionToSql(&document, sqlStmt, &offsetSql);
+	if (retValue){
+		return retValue;
 	}
 
 	if (!copyToSqlStmt(sqlStmt, offsetSql, ";\0", 2)){		
@@ -86,6 +59,107 @@ int StorageMapper::select(char *url, char *jsonDoc, char *sqlStmt){
 #endif
 
 	return 0;
+}
+/*******************************************************************************************************//**
+*! \brief Execute a delete
+* \param[in] url - represents the table name in the database (table name is the last section of the url)
+* \param[in] jsonDoc - the data in JSON format
+* \param[out] sqlStmt - the sql statement to execute
+*******************************************************************************************************/
+int StorageMapper::deleteData(char *url, char *jsonDoc, char *sqlStmt){
+	
+
+	int retValue;
+	int nameSize;
+	Document document;  // Default template parameter
+	int offsetSql = 12;		// the offset in the sql stmt updated
+
+	Value nestedObject;
+
+
+	memcpy(sqlStmt, "delete from ", offsetSql);
+
+	// add table name
+	retValue = getTableNameFromUrl(url, MAX_SQL_STMT_LENGTH - offsetSql, sqlStmt + offsetSql, &nameSize);
+	if (retValue){
+		return retValue;
+	}
+
+	offsetSql += nameSize;
+
+	*(sqlStmt + offsetSql) = ' ';
+	++offsetSql;
+
+
+	// parse the JSON
+    if (document.Parse(jsonDoc).HasParseError()){
+        return PARSER_FAILURE_ON_JSON_DOCUMENT;
+	}
+
+
+	retValue = mapWhereConditionToSql(&document, sqlStmt, &offsetSql);
+	if (retValue){
+		return retValue;
+	}
+
+
+	if (!copyToSqlStmt(sqlStmt, offsetSql, ";\0", 2)){		
+		return JSON_SIZE_ERROR;
+	}
+
+#ifdef DEBUG_INSERT
+	printf("\n%s", sqlStmt);
+#endif
+
+	return 0;
+}
+
+
+/*******************************************************************************************************//**
+*! \brief Map a JSON where condition to SQL
+* \param[in] document - a pointer to the JSON document.
+* \param[out] sqlStmt - a pointer to the sql statement
+* \param[in/out] offsetSql - a pointer to the current offset in the sql statement
+*******************************************************************************************************/
+int StorageMapper::mapWhereConditionToSql(Document *document, char *sqlStmt, int *offsetSql){
+
+	char *name;
+	int stringLength;
+	int retValue = NON_SUPPORTED_JSON_FORMAT;
+
+	for (Value::ConstMemberIterator itr = (*document).MemberBegin(); itr != (*document).MemberEnd(); ++itr){
+		if (itr->name.IsString()){
+			name = (char *)itr->name.GetString();		// needs to be one of the following: 1) where 2) ...
+		}else{
+			return PARSER_FAILURE_ON_JSON_DOCUMENT;		// missing expected sql text
+		}
+
+		stringLength = itr->name.GetStringLength();
+
+		RETURN_IF_NO_SQL_BUFF_SPACE(*offsetSql, (stringLength + 1));
+
+		memcpy(sqlStmt + *offsetSql, name , stringLength);
+		*offsetSql += stringLength;
+
+		*(sqlStmt + *offsetSql) = ' ';
+		++*offsetSql;
+
+	
+		if (stringLength == 5 && memcmp(name, "where", stringLength) == 0){
+			if (!(*document)[ name ].IsObject()){
+				return PARSER_FAILURE_ON_JSON_DOCUMENT;		// document[ name ] needs to show an Object representing where condition
+			}
+
+			retValue = getNestedObject( &(*document)[ name ], sqlStmt, offsetSql);
+			
+			if (retValue){
+				return retValue;
+			}
+		}
+
+	}
+
+	return retValue;
 }
 
 /*******************************************************************************************************//**

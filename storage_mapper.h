@@ -26,10 +26,10 @@ public:
 
 	int select(char *url, char *jsonDoc, char *sqlStmt);
 	int insert(char *tableName, char *jsonDoc, char *sqlStmt);
-
+	int deleteData(char *url, char *jsonDoc, char *sqlStmt);
 
 private:
-
+	int mapWhereConditionToSql(Document *document, char *sqlStmt, int *offsetSql);
 	int getTableNameFromUrl(char *url, int maxLength, char *dest, int *nameSize);
 	int moveStringToDest(char *dest, char *src, int stringLength, int maxLength, bool addQuotation, bool addComma, int *offsetSql);
 	int moveIntToDest(char *dest, int value, int maxLength, bool addComma, int *offsetSql);

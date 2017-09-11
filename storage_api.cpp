@@ -70,8 +70,6 @@ void demoStorageCalls(){
 
 	char jasonQuery1[] = "{ \"where\": { \"column\": \"id\", \"condition\": \">=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \">=\", \"value\" : \"ABCDE\" } } }";
 
-
-
 	retValue = pMapper->select( "aa\\readings" , jasonQuery1, sqlStmt);		
 	if (retValue){
 		printf("\nFailed to parse JSON select with error - %i", retValue);
@@ -83,6 +81,18 @@ void demoStorageCalls(){
 		printf("\nFailed to select data - %s", pPstgresConnect->getErrorMessage());
 		exit(-1);
 	}
+
+
+	// 4. test delete
+
+	char jasondelete[] = "{ \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"ABCDE\" } } }";
+
+	retValue = pMapper->deleteData( "aa\\readings" , jasonQuery1, sqlStmt);		
+	if (retValue){
+		printf("\nFailed to parse JSON select with error - %i", retValue);
+		exit(-1);
+	}
+
 
 
 	pPstgresConnect->disconnect(conn);
