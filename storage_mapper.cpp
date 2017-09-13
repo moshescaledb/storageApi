@@ -641,7 +641,7 @@ int StorageMapper::getTableNameFromUrl(char *url, int maxLength, char *dest, int
 	while (length--){
 		ch = url[length];
 		if (!isValidSqlChar(ch)){
-			if (ch == '\\' || ch == '/'){
+			if (ch == '/'){
 				break;
 			}
 			return MISSING_TABLE_NAME;	// Invalid chars in the table name

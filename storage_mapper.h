@@ -2,12 +2,14 @@
 #ifndef _STORAGE_MAPPER_H
 #define  _STORAGE_MAPPER_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstdio>
+#include <iostream>
 #include "include\rapidjson\document.h"
 #include "include\rapidjson\writer.h"
 #include "include\rapidjson\stringbuffer.h"
 #include "include\rapidjson\prettywriter.h" // for stringify JSON
-#include <cstdio>
-#include <iostream>
 
 #include "mapper_constants.h"
 

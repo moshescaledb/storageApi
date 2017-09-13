@@ -43,7 +43,7 @@ void demoStorageCalls(){
 
 	char jsonInsert1[] = " { \"id\" : 12345, \"asset_code\" : \"ABCDE\" , \"read_key\" : \"c7c41c31-fb4d-4720-8abd-80b65e55f24b\", \"user_ts\" : \"1994-11-29\" } ";;
 
-	retValue = pMapper->insert( "aa\\readings" , jsonInsert1, sqlStmt);	// get the sql from the json
+	retValue = pMapper->insert( "aa/readings" , jsonInsert1, sqlStmt);	// get the sql from the json
 	if (retValue){
 		printf("\nFailed to parse JSON insert with error %i", retValue);
 		exit(-1);
@@ -59,7 +59,7 @@ void demoStorageCalls(){
 
 	char jsonInsert2[] = " { \"id\" : 98765, \"asset_code\" : \"QRSTUV\" , \"read_key\" : \"c7c41c31-fb4d-4720-8abd-80b65e55f24b\", \"user_ts\" : \"1994-11-24\" } ";;
 
-	retValue = pMapper->insert( "aa\\readings" , jsonInsert2, sqlStmt);	// get the sql from the json
+	retValue = pMapper->insert( "aa/readings" , jsonInsert2, sqlStmt);	// get the sql from the json
 	if (retValue){
 		printf("\nFailed to parse JSON insert with error %i", retValue);
 		exit(-1);
@@ -76,7 +76,7 @@ void demoStorageCalls(){
 
 	char jsonUpdate[] = "{ \"set\" : {\"column\": \"id\", \"condition\": \"=\" , \"value\" : 22222, \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"EDCBA\" } , \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"ABCDE\" } } }";
 
-	retValue = pMapper->update( "aa\\readings" , jsonUpdate, sqlStmt);		
+	retValue = pMapper->update( "aa/readings" , jsonUpdate, sqlStmt);		
 	if (retValue){
 		printf("\nFailed to parse JSON select with error - %i", retValue);
 		exit(-1);
@@ -93,7 +93,7 @@ void demoStorageCalls(){
 
 	char jsonQuery1[] = "{ \"where\": { \"column\": \"id\", \"condition\": \">=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \">=\", \"value\" : \"ABCDE\" } } }";
 
-	retValue = pMapper->select( "aa\\readings" , jsonQuery1, sqlStmt);		
+	retValue = pMapper->select( "aa/readings" , jsonQuery1, sqlStmt);		
 	if (retValue){
 		printf("\nFailed to parse JSON select with error - %i", retValue);
 		exit(-1);
@@ -110,7 +110,7 @@ void demoStorageCalls(){
 
 	char jsondelete[] = "{ \"where\": { \"column\": \"id\", \"condition\": \"=\" , \"value\" : 12345, \"and\" : { \"column\" : \"asset_code\", \"condition\" : \"=\", \"value\" : \"ABCDE\" } } }";
 
-	retValue = pMapper->deleteData( "aa\\readings" , jsonQuery1, sqlStmt);		
+	retValue = pMapper->deleteData( "aa/readings" , jsonQuery1, sqlStmt);		
 	if (retValue){
 		printf("\nFailed to parse JSON select with error - %i", retValue);
 		exit(-1);

@@ -48,7 +48,11 @@ private:
 
 		char* errCode = PQresultErrorField(res, PG_DIAG_SQLSTATE);
 		
-		memcpy(dbmsErrorCode_, errCode, 5);	// save code
+		if (errCode){
+			memcpy(dbmsErrorCode_, errCode, 5);	// save code
+		}else{
+			dbmsErrorCode_[0] = NULL;			// No error code returned
+		}
 
 		saveError(conn);	// save text
 	}
