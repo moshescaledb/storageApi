@@ -17,8 +17,15 @@ void demoStorageCalls(){
 
 	PostgresConnect *pPstgresConnect = new PostgresConnect();	// init connection to PostgreSQL
 
+	char host[] = "localhost";
+	char port[] = "5432";
+	char database[] = "postgres";
+	char user[] = "postgres";
+	char password[] = "password";
+
+
 	// connect 
-	PGconn *conn = pPstgresConnect->init("localhost", "5432", "postgres", "postgres", "password");		// Initialize postgres, return dbms connection
+	PGconn *conn = pPstgresConnect->init(host, port, database, user, password);		// Initialize postgres, return dbms connection
 	if (!conn){
 		// connection failed - print error and exit
 		printf("\nFailed to connect to PostgreSQL - %s", pPstgresConnect->getErrorMessage());
