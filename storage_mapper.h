@@ -77,7 +77,7 @@ private:
 *******************************************************************************************************/
 	inline bool copyToSqlStmt(char *sqlStmt, int offsetSql, char *subString, int subStringLength){
 
-		if (offsetSql + 3 > MAX_SQL_STMT_LENGTH){
+		if (offsetSql + subStringLength > MAX_SQL_STMT_LENGTH){
 			return false;
 		}
 		

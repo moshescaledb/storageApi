@@ -20,9 +20,13 @@ int StorageMapper::select(char *url, char *jsonDoc, char *sqlStmt){
 	int retValue;
 	int nameSize;
 	Document document;  // Default template parameter
-	int offsetSql = 14;		// the offset in the sql stmt updated
+	int offsetSql = SIZE_OF_SELECT_PREFIX;		// the offset in the sql stmt updated
 	Value nestedObject;
 
+	// parse the JSON
+    if (document.Parse(jsonDoc).HasParseError()){
+        return PARSER_FAILURE_ON_JSON_DOCUMENT;
+	}
 
 	memcpy(sqlStmt, "select * from ", offsetSql);
 
@@ -36,12 +40,6 @@ int StorageMapper::select(char *url, char *jsonDoc, char *sqlStmt){
 
 	*(sqlStmt + offsetSql) = ' ';
 	++offsetSql;
-
-
-	// parse the JSON
-    if (document.Parse(jsonDoc).HasParseError()){
-        return PARSER_FAILURE_ON_JSON_DOCUMENT;
-	}
 
 	retValue = mapPairsToSql(&document, sqlStmt, &offsetSql);
 	if (retValue){
@@ -70,10 +68,14 @@ int StorageMapper::deleteData(char *url, char *jsonDoc, char *sqlStmt){
 	int retValue;
 	int nameSize;
 	Document document;  // Default template parameter
-	int offsetSql = 12;		// the offset in the sql stmt updated
+	int offsetSql = SIZE_OF_DELETE_PREFIX;		// the offset in the sql stmt after "delete from "
 
 	Value nestedObject;
 
+	// parse the JSON
+    if (document.Parse(jsonDoc).HasParseError()){
+        return PARSER_FAILURE_ON_JSON_DOCUMENT;
+	}
 
 	memcpy(sqlStmt, "delete from ", offsetSql);
 
@@ -87,12 +89,6 @@ int StorageMapper::deleteData(char *url, char *jsonDoc, char *sqlStmt){
 
 	*(sqlStmt + offsetSql) = ' ';
 	++offsetSql;
-
-
-	// parse the JSON
-    if (document.Parse(jsonDoc).HasParseError()){
-        return PARSER_FAILURE_ON_JSON_DOCUMENT;
-	}
 
 
 	retValue = mapPairsToSql(&document, sqlStmt, &offsetSql);
@@ -124,10 +120,14 @@ int StorageMapper::update(char *url, char *jsonDoc, char *sqlStmt){
 	int retValue;
 	int nameSize;
 	Document document;  // Default template parameter
-	int offsetSql = 7;		// the offset in the sql stmt updated
+	int offsetSql = SIZE_OF_UPDATE_PREFIX;		// the offset in the sql stmt updated
 
 	Value nestedObject;
 
+	// parse the JSON
+    if (document.Parse(jsonDoc).HasParseError()){
+        return PARSER_FAILURE_ON_JSON_DOCUMENT;
+	}
 
 	memcpy(sqlStmt, "update ", offsetSql);
 
@@ -143,11 +143,6 @@ int StorageMapper::update(char *url, char *jsonDoc, char *sqlStmt){
 
 	sqlStmt[offsetSql] = ' ';
 	offsetSql += 1;
-
-	// parse the JSON
-    if (document.Parse(jsonDoc).HasParseError()){
-        return PARSER_FAILURE_ON_JSON_DOCUMENT;
-	}
 
 	retValue = mapPairsToSql(&document, sqlStmt, &offsetSql);// Add the WHERE part to the SQL
 	if (retValue){
@@ -354,8 +349,13 @@ int StorageMapper::insert(char *url, char *jsonDoc, char *sqlStmt){
 	int retValue;
 	int nameSize;
 	Document document;  // Default template parameter
-	int offsetSql = 12;		// the offset in the sql stmt updated
+	int offsetSql = SIZE_OF_INSERT_PREFIX;	// the offset in the sql stmt after the -  "insert into "
 	int stringLength;
+
+	// parse the JSON
+    if (document.Parse(jsonDoc).HasParseError()){
+        return PARSER_FAILURE_ON_JSON_DOCUMENT;
+	}
 
 	memcpy(sqlStmt, "insert into ", offsetSql);
 
@@ -367,10 +367,6 @@ int StorageMapper::insert(char *url, char *jsonDoc, char *sqlStmt){
 
 	offsetSql += nameSize;
 
-	// parse the JSON
-    if (document.Parse(jsonDoc).HasParseError()){
-        return PARSER_FAILURE_ON_JSON_DOCUMENT;
-	}
 
 	// copy the field names
 
