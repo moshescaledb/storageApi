@@ -27,7 +27,7 @@ void demoStorageCalls(){
 	char password[] = "password";
 
 	StorageServer *pServer = new StorageServer();
-//	pServer->runServer();
+	pServer->runServer();
 
 
 	// connect 

@@ -74,6 +74,7 @@ void StorageServer::server()
 
 	char kk[9999];
 	recv(connected,kk,sizeof(kk),0);
+
 	printf("\n Received:%s",kk);
 
 	char xx[9999];
