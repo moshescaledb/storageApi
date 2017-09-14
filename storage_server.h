@@ -1,3 +1,5 @@
+// Copyright (c) 2017 OSIsoft, LLC
+
 #ifndef _STORAGE_SERVER_H
 #define  _STORAGE_SERVER_H
 

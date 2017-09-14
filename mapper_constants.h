@@ -1,3 +1,4 @@
+// Copyright (c) 2017 OSIsoft, LLC
 
 //#define OS_LINUX
 #define OS_WINDOWS

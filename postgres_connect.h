@@ -1,3 +1,5 @@
+// Copyright (c) 2017 OSIsoft, LLC
+
 #ifndef _POSTGRE_CONNECT_H
 #define  _POSTGRE_CONNECT_H
 

@@ -1,3 +1,5 @@
+// Copyright (c) 2017 OSIsoft, LLC
+
 // storage_api.cpp : Defines the entry point for the console application.
 //
 
@@ -25,7 +27,7 @@ void demoStorageCalls(){
 	char password[] = "password";
 
 	StorageServer *pServer = new StorageServer();
-	pServer->runServer();
+//	pServer->runServer();
 
 
 	// connect 

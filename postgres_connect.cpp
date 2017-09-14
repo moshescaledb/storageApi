@@ -1,3 +1,4 @@
+// Copyright (c) 2017 OSIsoft, LLC
 
 #include "postgres_connect.h"
 

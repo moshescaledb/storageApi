@@ -1,3 +1,5 @@
+// Copyright (c) 2017 OSIsoft, LLC
+
 #include "storage_server.h"
 
 

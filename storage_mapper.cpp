@@ -1,3 +1,5 @@
+// Copyright (c) 2017 OSIsoft, LLC
+
 #include "storage_mapper.h"
 
 
@@ -590,7 +592,7 @@ int StorageMapper::moveIntToDest(char *dest, int value, int maxLength, bool addC
 	char numberBuffer[20];
 	int stringLength;
 
-	itoa(value, numberBuffer, 10);
+	_itoa_s(value, numberBuffer, 10);
 
 	stringLength = (int)strlen(numberBuffer);
 
