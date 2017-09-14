@@ -1,5 +1,6 @@
 
-
+//#define OS_LINUX
+#define OS_WINDOWS
 
 #define DEBUG_INSERT
 #define DEBUG_SELECT

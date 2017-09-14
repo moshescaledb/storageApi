@@ -1,10 +1,17 @@
-﻿Build started 9/13/2017 4:14:25 PM.
+﻿Build started 9/13/2017 7:32:19 PM.
      1>Project "C:\storageApi\windows\fog_storage\fog_storage.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\fog_storage.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt ..\..\storage_api.cpp
-         storage_api.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt ..\..\storage_server.cpp
+         storage_server.cpp
+     1>..\..\storage_server.cpp(36): warning C4244: '=' : conversion from 'SOCKET' to 'int', possible loss of data
+     1>..\..\storage_server.cpp(68): warning C4244: '=' : conversion from 'SOCKET' to 'int', possible loss of data
+     1>..\..\storage_server.cpp(78): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h(105) : see declaration of 'strcpy'
+     1>..\..\storage_server.cpp(28): warning C4101: 'recv_data' : unreferenced local variable
+     1>..\..\storage_server.cpp(25): warning C4101: 'bytes_recieved' : unreferenced local variable
+     1>..\..\storage_server.cpp(27): warning C4101: 'send_data' : unreferenced local variable
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -12,6 +19,7 @@
          x64\Debug\postgres_connect.obj
          x64\Debug\storage_api.obj
          x64\Debug\storage_mapper.obj
+         x64\Debug\storage_server.obj
          fog_storage.vcxproj -> C:\storageApi\windows\fog_storage\x64\Debug\fog_storage.exe
        Manifest:
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"x64\Debug\fog_storage.exe.embed.manifest" /manifest x64\Debug\fog_storage.exe.intermediate.manifest
@@ -26,4 +34,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.42
+Time Elapsed 00:00:00.92
