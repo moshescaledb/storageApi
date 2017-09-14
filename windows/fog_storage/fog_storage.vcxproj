@@ -176,13 +176,11 @@
     <ClInclude Include="..\..\mapper_constants.h" />
     <ClInclude Include="..\..\postgres_connect.h" />
     <ClInclude Include="..\..\storage_mapper.h" />
-    <ClInclude Include="..\..\storage_server.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\postgres_connect.cpp" />
     <ClCompile Include="..\..\storage_api.cpp" />
     <ClCompile Include="..\..\storage_mapper.cpp" />
-    <ClCompile Include="..\..\storage_server.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

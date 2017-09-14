@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "storage_mapper.h"
 #include "postgres_connect.h"
-#include "storage_server.h"
 
 /*******************************************************************************************************//**
 *! \brief Call the storage API with JSON structures representing insert / update / delete / select
@@ -25,9 +24,6 @@ void demoStorageCalls(){
 	char database[] = "postgres";
 	char user[] = "postgres";
 	char password[] = "password";
-
-	StorageServer *pServer = new StorageServer();
-	pServer->runServer();
 
 
 	// connect 

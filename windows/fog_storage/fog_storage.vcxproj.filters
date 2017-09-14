@@ -129,9 +129,6 @@
     <ClInclude Include="..\..\storage_mapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\storage_server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\postgres_connect.cpp">
@@ -141,9 +138,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\storage_mapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\storage_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
