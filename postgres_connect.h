@@ -66,7 +66,12 @@ private:
 	void saveError(PGconn *conn){
 
 		char *errorTxrt = PQerrorMessage(conn);
-		
+
+#ifdef OS_LINUX
+		strlcpy(dbmsErrorTxt_, errorTxrt, MAX_DBMS_ERR_MSG_LENGTH);
+#endif
+
+#ifdef OS_WINDOWS
 		int errLength = (int)strlen(errorTxrt);
 
 		if (errLength < MAX_DBMS_ERR_MSG_LENGTH){
@@ -76,6 +81,7 @@ private:
 			memcpy(dbmsErrorTxt_, errorTxrt, MAX_DBMS_ERR_MSG_LENGTH - 1);
 			dbmsErrorTxt_[MAX_DBMS_ERR_MSG_LENGTH - 1] = NULL;
 		}
+#endif
 
 	}
 

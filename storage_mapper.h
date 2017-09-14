@@ -78,7 +78,7 @@ private:
 *! \brief set the end of the sql string
 * \return false if no space in the sql buffer
 *******************************************************************************************************/
-	inline bool copyToSqlStmt(char *sqlStmt, int offsetSql, char *subString, int subStringLength){
+	inline bool copyToSqlStmt(char *sqlStmt, int offsetSql, const char *subString, int subStringLength){
 
 		if (offsetSql + subStringLength > MAX_SQL_STMT_LENGTH){
 			return false;
